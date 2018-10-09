@@ -38,6 +38,12 @@ public class Login : MonoBehaviour {
 
     private string account;
     private string password;
+    string loginIP = "127.0.0.1";
+    string gameIP = "127.0.0.1";
+    int loginPort = 8101;
+    int gamePort = 8547;
+    string subid;
+    int Index = 1;
 
     byte[] clientkey;
     byte[] challenge;
@@ -80,16 +86,13 @@ public class Login : MonoBehaviour {
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
-            NetCore.Init();
-            NetSender.Init();
-            NetReceiver.Init();
-            Subid();
+            Register();
         }
     }
 
     void Update()
     {
-        NetCore.Dispatch();
+
     }
 
     public void Connect()
@@ -101,21 +104,25 @@ public class Login : MonoBehaviour {
             account = "ding";
             password = "password";
         }
-        NetCore.Connect("127.0.0.1", 8101, SocketConnected);
+        NetCore.Connect(loginIP, loginPort, LoginConnected);
     }
 
-    void SocketConnected()
+    void LoginConnected()
     {
+        // 连接到登陆服务器之后进行验证
         Handshake();
     }
 
     public void Handshake()
     {
-        handshake.request req = new handshake.request();
+        // 生成私钥
         clientkey = randomkey();
+        handshake.request req = new handshake.request();
+        // 发送公钥
         req.clientkey = Convert.ToBase64String(dhexchange(clientkey));
         NetSender.Send<ClientProtocol.handshake>(req, (_) =>
         {
+            // 返回消息
             handshake.response rsp = _ as handshake.response;
             serverkey = Convert.FromBase64String(rsp.serverkey);
             challenge = Convert.FromBase64String(rsp.challenge);
@@ -124,7 +131,7 @@ public class Login : MonoBehaviour {
         });
     }
 
-    string encode_token(stToken token)
+    string EncodeToken()
     {
         return string.Format("{0}@{1}:{2}",
         Utilities.ToBase64String(token.user),
@@ -134,6 +141,7 @@ public class Login : MonoBehaviour {
     
     void Challenge(byte[] hmac)
     {
+        // 验证密钥
         challenge.request req = new challenge.request();
         req.hmac = Convert.ToBase64String(hmac);
         NetSender.Send<ClientProtocol.challenge>(req, (_) =>
@@ -143,30 +151,97 @@ public class Login : MonoBehaviour {
             token.server = "sample";
             token.user = account;
             token.pass = password;
-            byte[] etoken = desencode(secret, Encoding.UTF8.GetBytes(encode_token(token)));
+            byte[] etoken = desencode(secret, Encoding.UTF8.GetBytes(EncodeToken()));
             Auth(etoken);
         });
     }
 
     void Auth(byte[] etokens)
     {
+        // 账号密码服务器验证
         auth.request req = new auth.request();
         req.etokens = Convert.ToBase64String(etokens);
         NetSender.Send<ClientProtocol.auth>(req);
     }
 
-    void Subid()
+    void Register()
     {
         NetReceiver.AddHandler<ServerProtocol.subid>((_) =>
         {
+            // 账号密码服务器验证返回
             ServerSprotoType.subid.request rsp = _ as ServerSprotoType.subid.request;
             Debug.Log(rsp.result.Substring(0, 3));
             int code = Convert.ToInt32(rsp.result.Substring(0, 3));
             if (code == 200)
             {
+                // 验证成功时连接至gameserver
                 Debug.Log("Auth Success!");
+                subid = Utilities.UnBase64String(rsp.result.Substring(4));
+                GameConnect();
             }
             return null;
         });
+    }
+
+    void GameConnect()
+    {
+        NetCore.Connect(gameIP, gamePort, GameConnected);
+    }
+
+    void GameConnected()
+    {
+        QueryLogin();
+    }
+
+    void QueryLogin()
+    {
+        //请求登陆gameserver
+        string handshake = string.Format("{0}@{1}#{2}:{3}", Utilities.ToBase64String(token.user), Utilities.ToBase64String(token.server), Utilities.ToBase64String(subid), Index);
+        byte[] hmac = hmac64(hashkey(Encoding.UTF8.GetBytes(handshake)), secret);
+        login.request req = new login.request();
+        req.handshake = handshake + ":" + Convert.ToBase64String(hmac);
+        NetSender.Send<ClientProtocol.login>(req, (_) =>
+        {
+            login.response rsp = _ as login.response;
+            Debug.Log(rsp.result);
+            int code = Convert.ToInt32(rsp.result.Substring(0, 3));
+            if (code == 200)
+            {
+                GetCharacterList();
+            }
+        });
+    }
+
+    void GetCharacterList()
+    {
+        // 请求角色列表
+        NetSender.Send<ClientProtocol.getcharacterlist>(null, (_) =>
+        {
+            getcharacterlist.response rsp = _ as getcharacterlist.response;
+            Debug.Log(rsp.character);
+            if (rsp.character.Count == 0)
+            {
+                // 创建角色
+                CreateCharacter();
+            }
+            else
+            {
+                // 选择角色
+                foreach(var item in rsp.character)
+                {
+                    PickCharacte(item.Key);
+                }
+            }
+        });
+    }
+
+    void CreateCharacter()
+    {
+
+    }
+
+    void PickCharacte(Int64 uuid)
+    {
+
     }
 }
