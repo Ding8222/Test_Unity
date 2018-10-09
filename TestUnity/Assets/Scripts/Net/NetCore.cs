@@ -28,6 +28,7 @@ public class NetCore
     private static SprotoStream recvStream = new SprotoStream();
 
     private static ProtocolFunctionDictionary protocol = ClientProtocol.Instance.Protocol;
+    private static ProtocolFunctionDictionary serverProtocol = ServerProtocol.Instance.Protocol;
     private static Dictionary<long, ProtocolFunctionDictionary.typeFunc> sessionDict;
 
     private static AsyncCallback connectCallback = new AsyncCallback(Connected);
@@ -74,6 +75,9 @@ public class NetCore
         if (connected)
         {
             socket.Close();
+            sendStream = new SprotoStream();
+            recvStream = new SprotoStream();
+            receivePosition = 0;
         }
     }
 
@@ -215,7 +219,7 @@ public class NetCore
                 RpcReqHandler rpcReqHandler = NetReceiver.GetHandler(tag);
                 if (rpcReqHandler != null)
                 {
-                    SprotoTypeBase rpcRsp = rpcReqHandler(protocol.GenRequest(tag, data, offset));
+                    SprotoTypeBase rpcRsp = rpcReqHandler(serverProtocol.GenRequest(tag, data, offset));
                     if (pkg.HasSession)
                     {
                         Send(rpcRsp, session, tag);

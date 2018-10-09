@@ -215,6 +215,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a4f0f428565257439bb5404c6417e84, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  AccountInputField: {fileID: 1614113175}
+  PasswordInputField: {fileID: 1181101878}
+  luaScript: {fileID: 4900000, guid: 4888ebafc184bdc47b6f34a14100de4d, type: 3}
 --- !u!4 &75702309
 Transform:
   m_ObjectHideFlags: 0
