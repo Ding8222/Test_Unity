@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 
 namespace Sproto
@@ -18,7 +18,7 @@ namespace Sproto
 		}
 
 		public SprotoStream () {
-			this.size = 128;
+			this.size = 65535;
 			this.pos = 0;
 			this.buffer = new byte[this.size];
 		}

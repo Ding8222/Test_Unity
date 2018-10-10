@@ -201,7 +201,7 @@ public class NetCore
     {
         package pkg = new package();
 
-        if (recvQueue.Count > 20)
+        if (recvQueue.Count > 100)
         {
             Debug.Log("recvQueue.Count: " + recvQueue.Count);
         }

@@ -7,10 +7,18 @@ using XLua;
 using System;
 using System.Collections.Generic;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class Login : MonoBehaviour {
 
     public static Login Instance;
+    
+    // 玩家角色列表
+    public Dictionary<Int64, character_overview> CharacterList
+    {
+        get { return characterList; }
+    }
+    Dictionary<Int64, character_overview> characterList;
 
     public InputField AccountInputField;
     public InputField PasswordInputField;
@@ -31,7 +39,6 @@ public class Login : MonoBehaviour {
     private FDelegate randomkey;
     private FDelegate1 dhexchange;
     private FDelegate2 dhsecret;
-    private FDelegate1 hexencode;
     private FDelegate2 hmac64;
     private FDelegate2 desencode;
     private FDelegate1 hashkey;
@@ -61,6 +68,26 @@ public class Login : MonoBehaviour {
 
     private void Awake()
     {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+            InitLua();
+        }
+    }
+
+    void Start()
+    {
+        Register();
+    }
+
+    void Update()
+    {
+
+    }
+
+    void InitLua()
+    {
         scriptEnv = luaEnv.NewTable();
 
         LuaTable meta = luaEnv.NewTable();
@@ -73,26 +100,9 @@ public class Login : MonoBehaviour {
         scriptEnv.Get("randomkey", out randomkey);
         scriptEnv.Get("dhexchange", out dhexchange);
         scriptEnv.Get("dhsecret", out dhsecret);
-        scriptEnv.Get("hexencode", out hexencode);
         scriptEnv.Get("hmac64", out hmac64);
         scriptEnv.Get("desencode", out desencode);
         scriptEnv.Get("hashkey", out hashkey);
-
-    }
-
-    void Start()
-    {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-            Register();
-        }
-    }
-
-    void Update()
-    {
-
     }
 
     public void Connect()
@@ -175,7 +185,7 @@ public class Login : MonoBehaviour {
             if (code == 200)
             {
                 // 验证成功时连接至gameserver
-                Debug.Log("Auth Success!");
+                Debug.Log("登陆服务器认证成功!");
                 subid = Utilities.UnBase64String(rsp.result.Substring(4));
                 GameConnect();
             }
@@ -207,41 +217,40 @@ public class Login : MonoBehaviour {
             int code = Convert.ToInt32(rsp.result.Substring(0, 3));
             if (code == 200)
             {
+                Debug.Log("游戏服务器认证成功!");
                 GetCharacterList();
             }
         });
     }
 
-    void GetCharacterList()
+    public void GetCharacterList()
     {
         // 请求角色列表
         NetSender.Send<ClientProtocol.getcharacterlist>(null, (_) =>
         {
             getcharacterlist.response rsp = _ as getcharacterlist.response;
-            Debug.Log(rsp.character);
-            if (rsp.character.Count == 0)
+            characterList = rsp.character;
+            Debug.Log("玩家角色数量：" + characterList.Count);
+            if (characterList.Count == 0)
             {
                 // 创建角色
-                CreateCharacter();
+                LoadCreateCharacterScene();
             }
             else
             {
                 // 选择角色
-                foreach(var item in rsp.character)
-                {
-                    PickCharacte(item.Key);
-                }
+                LoadPickCharacterScene();
             }
         });
     }
 
-    void CreateCharacter()
+    void LoadCreateCharacterScene()
     {
-
+        SceneManager.LoadScene("CreateCharacter");
     }
 
-    void PickCharacte(Int64 uuid)
+    void LoadPickCharacterScene()
     {
-
+        SceneManager.LoadScene("PickCharacter");
     }
 }
