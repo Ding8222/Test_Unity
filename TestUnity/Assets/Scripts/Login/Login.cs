@@ -12,16 +12,10 @@ using UnityEngine.SceneManagement;
 public class Login : MonoBehaviour {
 
     public static Login Instance;
-    
-    // 玩家角色列表
-    public Dictionary<Int64, character_overview> CharacterList
-    {
-        get { return characterList; }
-    }
-    Dictionary<Int64, character_overview> characterList;
 
     public InputField AccountInputField;
     public InputField PasswordInputField;
+
     public TextAsset luaScript;
     internal static LuaEnv luaEnv = new LuaEnv();
     private LuaTable scriptEnv;
@@ -42,30 +36,15 @@ public class Login : MonoBehaviour {
     private FDelegate2 hmac64;
     private FDelegate2 desencode;
     private FDelegate1 hashkey;
-
-    private string account;
-    private string password;
+    
     string loginIP = "127.0.0.1";
     string gameIP = "127.0.0.1";
     int loginPort = 8101;
     int gamePort = 8547;
-    string subid;
-    int Index = 1;
 
     byte[] clientkey;
-    byte[] challenge;
     byte[] serverkey;
-    byte[] secret;
-
-    struct stToken
-    {
-        public string server;
-        public string user;
-        public string pass;
-    }
-
-    stToken token;
-
+    
     private void Awake()
     {
         if (Instance == null)
@@ -107,12 +86,13 @@ public class Login : MonoBehaviour {
 
     public void Connect()
     {
-        account = AccountInputField.text;
-        password = PasswordInputField.text;
-        if (account.Length == 0)
+        PlayerInfo.Instance.Account = AccountInputField.text;
+        PlayerInfo.Instance.Password = PasswordInputField.text;
+        if (PlayerInfo.Instance.Account.Length == 0)
         {
-            account = "ding";
-            password = "password";
+            PlayerInfo.Instance.Account = "ding";
+            PlayerInfo.Instance.Password = "password";
+            PlayerInfo.Instance.Server = "sample";
         }
         NetCore.Connect(loginIP, loginPort, LoginConnected);
     }
@@ -135,18 +115,18 @@ public class Login : MonoBehaviour {
             // 返回消息
             handshake.response rsp = _ as handshake.response;
             serverkey = Convert.FromBase64String(rsp.serverkey);
-            challenge = Convert.FromBase64String(rsp.challenge);
-            secret = dhsecret(serverkey, clientkey);
-            Challenge(hmac64(challenge, secret));
+            PlayerInfo.Instance.Challenge = Convert.FromBase64String(rsp.challenge);
+            PlayerInfo.Instance.Secret = dhsecret(serverkey, clientkey);
+            Challenge(hmac64(PlayerInfo.Instance.Challenge, PlayerInfo.Instance.Secret));
         });
     }
 
     string EncodeToken()
     {
         return string.Format("{0}@{1}:{2}",
-        Utilities.ToBase64String(token.user),
-        Utilities.ToBase64String(token.server),
-        Utilities.ToBase64String(token.pass));
+        Utilities.ToBase64String(PlayerInfo.Instance.Account),
+        Utilities.ToBase64String(PlayerInfo.Instance.Server),
+        Utilities.ToBase64String(PlayerInfo.Instance.Password));
     }
     
     void Challenge(byte[] hmac)
@@ -158,10 +138,7 @@ public class Login : MonoBehaviour {
         {
             challenge.response rsp = _ as challenge.response;
             Debug.Log(rsp.result);
-            token.server = "sample";
-            token.user = account;
-            token.pass = password;
-            byte[] etoken = desencode(secret, Encoding.UTF8.GetBytes(EncodeToken()));
+            byte[] etoken = desencode(PlayerInfo.Instance.Secret, Encoding.UTF8.GetBytes(EncodeToken()));
             Auth(etoken);
         });
     }
@@ -186,7 +163,7 @@ public class Login : MonoBehaviour {
             {
                 // 验证成功时连接至gameserver
                 Debug.Log("登陆服务器认证成功!");
-                subid = Utilities.UnBase64String(rsp.result.Substring(4));
+                PlayerInfo.Instance.Subid = Utilities.UnBase64String(rsp.result.Substring(4));
                 GameConnect();
             }
             return null;
@@ -206,8 +183,11 @@ public class Login : MonoBehaviour {
     void QueryLogin()
     {
         //请求登陆gameserver
-        string handshake = string.Format("{0}@{1}#{2}:{3}", Utilities.ToBase64String(token.user), Utilities.ToBase64String(token.server), Utilities.ToBase64String(subid), Index);
-        byte[] hmac = hmac64(hashkey(Encoding.UTF8.GetBytes(handshake)), secret);
+        string handshake = string.Format("{0}@{1}#{2}:{3}", 
+            Utilities.ToBase64String(PlayerInfo.Instance.Account), 
+            Utilities.ToBase64String(PlayerInfo.Instance.Server),
+            Utilities.ToBase64String(PlayerInfo.Instance.Subid), PlayerInfo.Instance.Index);
+        byte[] hmac = hmac64(hashkey(Encoding.UTF8.GetBytes(handshake)), PlayerInfo.Instance.Secret);
         login.request req = new login.request();
         req.handshake = handshake + ":" + Convert.ToBase64String(hmac);
         NetSender.Send<ClientProtocol.login>(req, (_) =>
@@ -229,9 +209,9 @@ public class Login : MonoBehaviour {
         NetSender.Send<ClientProtocol.getcharacterlist>(null, (_) =>
         {
             getcharacterlist.response rsp = _ as getcharacterlist.response;
-            characterList = rsp.character;
-            Debug.Log("玩家角色数量：" + characterList.Count);
-            if (characterList.Count == 0)
+            PlayerInfo.Instance.CharacterList = rsp.character;
+            Debug.Log("玩家角色数量：" + PlayerInfo.Instance.CharacterList.Count);
+            if (PlayerInfo.Instance.CharacterList.Count == 0)
             {
                 // 创建角色
                 LoadCreateCharacterScene();

@@ -15,13 +15,10 @@ public class PickCharacterManager : MonoBehaviour
 
     // 角色名对应的唯一ID
     Dictionary<string, Int64> Characters = new Dictionary<string, Int64> { };
-
-    // 当前玩家选择的角色唯一ID
-    Int64 CelectCharacterUUID;
-
+    
     // Use this for initialization
     void Start () {
-		foreach(var item in Login.Instance.CharacterList)
+		foreach(var item in PlayerInfo.Instance.CharacterList)
         {
             Characters[item.Value.name] = item.Key;
             NewCharacterShowCanvas(item.Value);
@@ -58,20 +55,26 @@ public class PickCharacterManager : MonoBehaviour
         // 角色信息UI发生点击事件的时候,根据名称设置当前选择的角色唯一ID
         Image img = obj.GetComponentInChildren<Image>();
         Text nameText = img.transform.Find("NameText").GetComponent<Text>();
-        CelectCharacterUUID = Characters[nameText.text];
+        Text jobText = img.transform.Find("JobText").GetComponent<Text>();
+        Text sexText = img.transform.Find("SexText").GetComponent<Text>();
+
+        PlayerInfo.Instance.UUID = Characters[nameText.text];
+        PlayerInfo.Instance.Name = nameText.text;
+        PlayerInfo.Instance.Job = Convert.ToInt32(jobText.text);
+        PlayerInfo.Instance.Sex = Convert.ToInt32(sexText.text);
     }
 
     public void EnterGame()
     {
         characterpick.request req = new characterpick.request();
-        req.uuid = CelectCharacterUUID;
+        req.uuid = PlayerInfo.Instance.UUID;
         NetSender.Send<ClientProtocol.characterpick>(req, (_) =>
         {
             characterpick.response rsp = _ as characterpick.response;
             Debug.Log("选择角色结果：" + rsp.ok);
             LoadScene();
         });
-        Debug.Log("选择角色唯一ID：" + CelectCharacterUUID);
+        Debug.Log("选择角色唯一ID：" + PlayerInfo.Instance.UUID);
     }
 
     public void CreateCharacter()
