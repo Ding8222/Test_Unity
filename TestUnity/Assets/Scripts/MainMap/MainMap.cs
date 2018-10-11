@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class MainMap : MonoBehaviour {
 
+    public GameObject gameObj;
 	// Use this for initialization
 	void Start () {
         InitPlayer();
@@ -18,6 +19,7 @@ public class MainMap : MonoBehaviour {
 
     void InitPlayer()
     {
+        PlayerInfo.Instance.gameObj = gameObj;
         PlayerInfo.Instance.InitGameObj();
     }
 

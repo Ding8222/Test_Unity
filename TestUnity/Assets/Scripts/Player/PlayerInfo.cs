@@ -8,9 +8,8 @@ using UnityEngine.UI;
 public class PlayerInfo : MonoBehaviour {
 
     public static PlayerInfo Instance;
-    public GameObject CharacterPrefab;
 
-    GameObject gameObj;
+    public GameObject gameObj;
 
     public string Account
     {
@@ -120,7 +119,7 @@ public class PlayerInfo : MonoBehaviour {
 
     public void InitGameObj()
     {
-        gameObj = Instantiate(CharacterPrefab);
+        gameObj.SetActive(true);
         lastPosition = gameObj.transform.position;
         // 每0.5秒同步一次坐标（如果坐标发送变化）
         InvokeRepeating("MoveTo", 0, 0.5f);
