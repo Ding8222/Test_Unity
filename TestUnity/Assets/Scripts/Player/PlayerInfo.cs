@@ -8,7 +8,10 @@ using UnityEngine.UI;
 public class PlayerInfo : MonoBehaviour {
 
     public static PlayerInfo Instance;
-    
+    public GameObject CharacterPrefab;
+
+    GameObject gameObj;
+
     public string Account
     {
         get { return account; }
@@ -113,4 +116,32 @@ public class PlayerInfo : MonoBehaviour {
 	void Update () {
 		
 	}
+
+
+    public void InitGameObj()
+    {
+        gameObj = Instantiate(CharacterPrefab);
+        lastPosition = gameObj.transform.position;
+        // 每0.5秒同步一次坐标（如果坐标发送变化）
+        InvokeRepeating("MoveTo", 0, 0.5f);
+    }
+
+    Vector3 lastPosition;
+    void MoveTo()
+    {
+        if(lastPosition!= gameObj.transform.position)
+        {
+            lastPosition = gameObj.transform.position;
+            moveto.request req = new moveto.request();
+            req.pos = new character_pos();
+            req.pos.x = Convert.ToInt32(gameObj.transform.position.x);
+            req.pos.y = Convert.ToInt32(gameObj.transform.position.y);
+            req.pos.z = Convert.ToInt32(gameObj.transform.position.z);
+            NetSender.Send<ClientProtocol.moveto>(req, (_) =>
+            {
+                moveto.response rsp = _ as moveto.response;
+                Debug.Log(rsp.pos.ToString());
+            });
+        }
+    }
 }

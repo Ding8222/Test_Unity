@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Collections.Generic;
 
@@ -140,8 +140,10 @@ namespace Sproto
 
 		public byte[] unpack (byte[] data, int len=0) {
 			this.clear ();
+            if (data == null)
+                System.Console.Write("111111");
 
-			len = (len==0)?(data.Length):(len);
+            len = (len==0)?(data.Length):(len);
 			int srcsz = len;
 
 			while (srcsz > 0) {

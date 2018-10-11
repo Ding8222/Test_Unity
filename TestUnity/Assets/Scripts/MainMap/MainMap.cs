@@ -7,6 +7,7 @@ public class MainMap : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+        InitPlayer();
         MapReady();
     }
 	
@@ -14,6 +15,11 @@ public class MainMap : MonoBehaviour {
 	void Update () {
 		
 	}
+
+    void InitPlayer()
+    {
+        PlayerInfo.Instance.InitGameObj();
+    }
 
     void MapReady()
     {
