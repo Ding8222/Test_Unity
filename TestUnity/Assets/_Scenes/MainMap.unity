@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44661498, g: 0.49645704, b: 0.5748394, a: 1}
+  m_IndirectSpecularColor: {r: 0.44661474, g: 0.49645692, b: 0.57483935, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &4
 LightmapSettings:
@@ -113,7 +113,7 @@ NavMeshSettings:
     accuratePlacement: 0
     debug:
       m_Flags: 0
-  m_NavMeshData: {fileID: 0}
+  m_NavMeshData: {fileID: 23800000, guid: 0b6f53124f820b846a6b81b90f0eae31, type: 2}
 --- !u!1 &6149993
 GameObject:
   m_ObjectHideFlags: 0
@@ -37538,7 +37538,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 126
   m_IsActive: 1
 --- !u!64 &901870354
 MeshCollider:
@@ -78401,6 +78401,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameObj: {fileID: 490130004}
+  monsterObj: {fileID: 113348, guid: 54eb5844754051b40a918a84c33b7c1a, type: 2}
 --- !u!4 &1986954518
 Transform:
   m_ObjectHideFlags: 0

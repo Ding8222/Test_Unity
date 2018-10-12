@@ -133,13 +133,12 @@ public class PlayerInfo : MonoBehaviour {
             lastPosition = gameObj.transform.position;
             moveto.request req = new moveto.request();
             req.pos = new character_pos();
-            req.pos.x = Convert.ToInt32(gameObj.transform.position.x);
-            req.pos.y = Convert.ToInt32(gameObj.transform.position.y);
-            req.pos.z = Convert.ToInt32(gameObj.transform.position.z);
+            req.pos.x = Convert.ToInt32(gameObj.transform.position.x) * 10;
+            req.pos.y = Convert.ToInt32(gameObj.transform.position.y) * 10;
+            req.pos.z = Convert.ToInt32(gameObj.transform.position.z) * 10;
             NetSender.Send<ClientProtocol.moveto>(req, (_) =>
             {
-                moveto.response rsp = _ as moveto.response;
-                Debug.Log(rsp.pos.ToString());
+
             });
         }
     }

@@ -18,18 +18,27 @@ public class PickCharacterManager : MonoBehaviour
     
     // Use this for initialization
     void Start () {
-		foreach(var item in PlayerInfo.Instance.CharacterList)
+        Vector3[] pos = new Vector3[3];
+        pos[0] = new Vector3(-280, 37, 0);
+        pos[1] = new Vector3(0, 37, 0);
+        pos[2] = new Vector3(280, 37, 0);
+
+        int index = 0;
+        foreach (var item in PlayerInfo.Instance.CharacterList)
         {
             Characters[item.Value.name] = item.Key;
-            NewCharacterShowCanvas(item.Value);
+            NewCharacterShowCanvas(item.Value, pos[index]);
+            index += 1;
         }
 	}
 	
-    void NewCharacterShowCanvas(character_overview character)
+    void NewCharacterShowCanvas(character_overview character, Vector3 pos)
     {
         // 生成角色信息UI
         GameObject obj = Instantiate(CharacterShowCanvas);
         Image img = obj.GetComponentInChildren<Image>();
+        var rt = img.gameObject.GetComponent<RectTransform>();
+        rt.anchoredPosition3D = new Vector3(pos.x, pos.y, pos.z);
         Text nameText = img.transform.Find("NameText").GetComponent<Text>();
         Text jobText = img.transform.Find("JobText").GetComponent<Text>();
         Text sexText = img.transform.Find("SexText").GetComponent<Text>();
