@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityStandardAssets.Characters.ThirdPerson;
+using UnityEngine.UI;
 
 public class MainMap : MonoBehaviour {
 
@@ -56,6 +57,8 @@ public class MainMap : MonoBehaviour {
             {
                 Debug.Log("添加角色：" + rsp.info.tempid + " 坐标：" + rsp.info.pos.x + "," + rsp.info.pos.y + "," + rsp.info.pos.z);
                 GameObject obj = Instantiate(monsterObj);
+                ThirdPersonCharacter tpc = obj.GetComponent<ThirdPersonCharacter>();
+                tpc.characterName.text = rsp.info.name;
                 obj.transform.position = new Vector3(rsp.info.pos.x / 10, rsp.info.pos.y / 10, rsp.info.pos.z / 10);
                 obj.SetActive(true);
                 monsterObjList[rsp.info.tempid] = obj;

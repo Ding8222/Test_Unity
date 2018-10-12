@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityStandardAssets.Characters.ThirdPerson;
 
 public class PlayerInfo : MonoBehaviour {
 
@@ -120,6 +121,8 @@ public class PlayerInfo : MonoBehaviour {
     public void InitGameObj()
     {
         gameObj.SetActive(true);
+        ThirdPersonCharacter tpc = gameObj.GetComponent<ThirdPersonCharacter>();
+        tpc.characterName.text = characterName;
         lastPosition = gameObj.transform.position;
         // 每0.5秒同步一次坐标（如果坐标发送变化）
         InvokeRepeating("MoveTo", 0, 0.5f);
