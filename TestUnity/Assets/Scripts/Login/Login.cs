@@ -16,6 +16,9 @@ public class Login : MonoBehaviour {
     public InputField AccountInputField;
     public InputField PasswordInputField;
 
+    public InputField IPInputField;
+    public InputField PortInputField;
+
     public TextAsset luaScript;
     internal static LuaEnv luaEnv = new LuaEnv();
     private LuaTable scriptEnv;
@@ -36,9 +39,10 @@ public class Login : MonoBehaviour {
     private FDelegate2 hmac64;
     private FDelegate2 desencode;
     private FDelegate1 hashkey;
-    
+
+    //string loginIP = "47.52.138.32";
     string loginIP = "127.0.0.1";
-    string gameIP = "127.0.0.1";
+    string gameIP ;
     int loginPort = 8101;
     int gamePort = 8547;
 
@@ -82,6 +86,20 @@ public class Login : MonoBehaviour {
         scriptEnv.Get("hmac64", out hmac64);
         scriptEnv.Get("desencode", out desencode);
         scriptEnv.Get("hashkey", out hashkey);
+    }
+
+    public void ChangeServerIP()
+    {
+        if (IPInputField.text.Length > 0)
+        {
+            loginIP = IPInputField.text;
+            loginPort = Convert.ToInt32(PortInputField.text);
+        }
+        else
+        {
+            loginIP = "47.52.138.32";
+            loginPort = 8101;
+        }
     }
 
     public void Connect()
@@ -172,6 +190,7 @@ public class Login : MonoBehaviour {
 
     void GameConnect()
     {
+        gameIP = loginIP;
         NetCore.Connect(gameIP, gamePort, GameConnected);
     }
 
