@@ -38,7 +38,6 @@ namespace XLua.LuaDLL
 #else
         const string LUADLL = "xlua";
 #endif
-
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
         public static extern int luaopen_crypt(System.IntPtr L);
 
@@ -141,13 +140,13 @@ namespace XLua.LuaDLL
 		public static extern void lua_remove(IntPtr L, int index);
 
         [DllImport(LUADLL,CallingConvention=CallingConvention.Cdecl)]
-		public static extern void lua_rawget(IntPtr L, int index);
+		public static extern int lua_rawget(IntPtr L, int index);
 
         [DllImport(LUADLL,CallingConvention=CallingConvention.Cdecl)]
 		public static extern void lua_rawset(IntPtr L, int index);//[-2, +0, m]
 
         [DllImport(LUADLL,CallingConvention=CallingConvention.Cdecl)]
-		public static extern void lua_setmetatable(IntPtr L, int objIndex);
+		public static extern int lua_setmetatable(IntPtr L, int objIndex);
 
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
         public static extern int lua_rawequal(IntPtr L, int index1, int index2);
@@ -283,7 +282,7 @@ namespace XLua.LuaDLL
 		}
 
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-		public static extern void lua_atpanic(IntPtr L, lua_CSFunction panicf);
+		public static extern IntPtr lua_atpanic(IntPtr L, lua_CSFunction panicf);
 
 		[DllImport(LUADLL,CallingConvention=CallingConvention.Cdecl)]
 		public static extern void lua_pushnumber(IntPtr L, double number);
@@ -297,7 +296,7 @@ namespace XLua.LuaDLL
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
         public static extern void xlua_pushuint(IntPtr L, uint value);
 
-        public static void lua_pushstring(IntPtr L, string str) //Òµï¿½ï¿½Ê¹ï¿½ï¿½
+        public static void lua_pushstring(IntPtr L, string str) //ÒµÎñÊ¹ÓÃ
         {
             if (str == null)
             {
@@ -305,6 +304,7 @@ namespace XLua.LuaDLL
             }
             else
             {
+#if !THREAD_SAFE && !HOTFIX_ENABLE
                 if (Encoding.UTF8.GetByteCount(str) > InternalGlobals.strBuff.Length)
                 {
                     byte[] bytes = Encoding.UTF8.GetBytes(str);
@@ -315,6 +315,10 @@ namespace XLua.LuaDLL
                     int bytes_len = Encoding.UTF8.GetBytes(str, 0, str.Length, InternalGlobals.strBuff, 0);
                     xlua_pushlstring(L, InternalGlobals.strBuff, bytes_len);
                 }
+#else
+                var bytes = Encoding.UTF8.GetBytes(str);
+                xlua_pushlstring(L, bytes, bytes.Length);
+#endif
             }
         }
 
@@ -329,6 +333,7 @@ namespace XLua.LuaDLL
             }
             else
             {
+#if !THREAD_SAFE && !HOTFIX_ENABLE
                 int str_len = str.Length;
                 if (InternalGlobals.strBuff.Length < str_len)
                 {
@@ -337,6 +342,10 @@ namespace XLua.LuaDLL
 
                 int bytes_len = Encoding.UTF8.GetBytes(str, 0, str_len, InternalGlobals.strBuff, 0);
                 xlua_pushlstring(L, InternalGlobals.strBuff, bytes_len);
+#else
+                var bytes = Encoding.UTF8.GetBytes(str);
+                xlua_pushlstring(L, bytes, bytes.Length);
+#endif
             }
         }
 
@@ -530,7 +539,7 @@ namespace XLua.LuaDLL
         //[DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
         //public static extern void xlua_pushbuffer(IntPtr L, byte[] buff);
 
-        //ï¿½ï¿½ï¿½ï¿½Unityï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Éµï¿½structï¿½Ï¶à£¬ï¿½â¼¸ï¿½ï¿½apiï¿½ï¿½ï¿½ï¿½ï¿½Å»ï¿½ï¿½ï¿½ï¿½ï¿½struct
+        //¶ÔÓÚUnity£¬½ö¸¡µã×é³ÉµÄstruct½Ï¶à£¬Õâ¼¸¸öapiÓÃÓÚÓÅ»¯ÕâÀàstruct
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
         public static extern bool xlua_pack_float2(IntPtr buff, int offset, float f1, float f2);
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]

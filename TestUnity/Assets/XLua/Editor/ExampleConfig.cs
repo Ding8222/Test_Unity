@@ -205,8 +205,6 @@ public static class ExampleConfig
     public static List<List<string>> BlackList = new List<List<string>>()  {
                 new List<string>(){"System.Xml.XmlNodeList", "ItemOf"},
                 new List<string>(){"UnityEngine.WWW", "movie"},
-                new List<string>(){"UnityEngine.Light", "shadowRadius"},
-                new List<string>(){"UnityEngine.Light", "shadowAngle"},
     #if UNITY_WEBGL
                 new List<string>(){"UnityEngine.WWW", "threadPriority"},
     #endif
