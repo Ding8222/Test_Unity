@@ -35,12 +35,13 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 
         private void Update()
         {
-            if (!m_Jump)
-            {
-                m_Jump = Input.GetButtonDown("Jump");
-            }
+
         }
 
+        public void Jump()
+        {
+            m_Jump = true;
+        }
 
         // Fixed update is called in sync with physics
         private void FixedUpdate()
