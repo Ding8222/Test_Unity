@@ -1,0 +1,8 @@
+function detect()
+	return true
+end
+
+
+function exit()
+	print("exit homegroup")
+end

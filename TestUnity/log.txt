@@ -1,0 +1,3 @@
+创建Func和Action的时候，需要在ExampleGenConfig.cs中的CSharpCallLua添加
+
+添加lua三方库的时候，需要在LuaDLL.cs中添加luaopen_XXX，还有在LuaEnv.cs中添加AddBuildin(

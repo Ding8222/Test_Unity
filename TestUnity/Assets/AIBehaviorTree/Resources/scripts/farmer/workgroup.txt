@@ -1,0 +1,10 @@
+
+--[[
+    基本信息：Name:work Type:SEQUENCE Weight:1
+    创建日期：12/7/2018 7:32:39 PM
+--]]
+
+--进入条件检测
+function detect()
+    return true
+end
