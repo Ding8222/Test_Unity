@@ -1,3 +1,7 @@
 创建Func和Action的时候，需要在ExampleGenConfig.cs中的CSharpCallLua添加
 
 添加lua三方库的时候，需要在LuaDLL.cs中添加luaopen_XXX，还有在LuaEnv.cs中添加AddBuildin(
+
+打ios包的时候，如果用到了第三方的lua库，需要使用xlua中的bulid，使用make_ios_lua53.sh生成libxlua.a文件。然后覆盖到Assets/Plugins/IOS中，再用Unity创建打包文件
+
+Mac下，三方库也需要和上面一样生成并覆盖，但是比较坑的就是需要重启一下Unity，不然不会生效的。

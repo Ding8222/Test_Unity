@@ -1,8 +1,12 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameDebugUI : MonoBehaviour {
+    public InputField FPSInputField;// 设置最大帧数
+
     private float m_LastUpdateShowTime = 0f;  //上一次更新帧率的时间;
 
     private float m_UpdateShowDeltaTime = 0.01f;//更新帧率的时间间隔;
@@ -13,7 +17,7 @@ public class GameDebugUI : MonoBehaviour {
 
     void Awake()
     {
-        Application.targetFrameRate = -1;
+        Application.targetFrameRate = 60;
     }
 
     // Use this for initialization
@@ -32,6 +36,11 @@ public class GameDebugUI : MonoBehaviour {
             m_FrameUpdate = 0;
             m_LastUpdateShowTime = Time.realtimeSinceStartup;
         }
+    }
+
+    public void SetTargetFrameRate()
+    {
+        Application.targetFrameRate = Convert.ToInt32(FPSInputField.text);
     }
 
     void OnGUI()

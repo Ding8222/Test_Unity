@@ -19,9 +19,9 @@ public class PickCharacterManager : MonoBehaviour
     // Use this for initialization
     void Start () {
         Vector3[] pos = new Vector3[3];
-        pos[0] = new Vector3(-280, 37, 0);
+        pos[0] = new Vector3(-600, 37, 0);
         pos[1] = new Vector3(0, 37, 0);
-        pos[2] = new Vector3(280, 37, 0);
+        pos[2] = new Vector3(600, 37, 0);
 
         int index = 0;
         foreach (var item in PlayerInfo.Instance.CharacterList)
