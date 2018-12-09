@@ -172,19 +172,20 @@ public class NodeEditor : EditorWindow {
         }
         else if (Event.current.type == EventType.MouseDrag)
         {
-            if (Event.current.button == 2)
+            // 拖动整个界面
+            //if (Event.current.button == 2)
             {
                 var rightClickNode = GetContainMousePosNode(Event.current.mousePosition );
                 if (rightClickNode == null)
                 {
                     m_BackGroundDrag = Event.current.delta;
-                    Debug.Log("mouse drag ");
+                    //Debug.Log("mouse drag ");
                     var list = new List<NodeGraph>();
                     NodeGraph.GetAllNodes(m_RootNode, list);
                     for (int i = 0; i < list.Count; ++i)
                     {
                         list[i].NodeRect.position += m_BackGroundDrag;
-                        Debug.Log(list[i].NodeRect.position + "   " + m_BackGroundDrag);
+                        //Debug.Log(list[i].NodeRect.position + "   " + m_BackGroundDrag);
                     }
                     Repaint();
                 }

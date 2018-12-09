@@ -2619,6 +2619,26 @@ Prefab:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 114459975532711978, guid: 37b6c004fda44c145882cf733345f746,
+        type: 2}
+      propertyPath: m_GoHome
+      value: 
+      objectReference: {fileID: 1614113174}
+    - target: {fileID: 114459975532711978, guid: 37b6c004fda44c145882cf733345f746,
+        type: 2}
+      propertyPath: m_GoWork
+      value: 
+      objectReference: {fileID: 1181101877}
+    - target: {fileID: 114459975532711978, guid: 37b6c004fda44c145882cf733345f746,
+        type: 2}
+      propertyPath: m_GoShop
+      value: 
+      objectReference: {fileID: 270760237}
+    - target: {fileID: 114459975532711978, guid: 37b6c004fda44c145882cf733345f746,
+        type: 2}
+      propertyPath: m_GoGirl
+      value: 
+      objectReference: {fileID: 450067452}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 37b6c004fda44c145882cf733345f746, type: 2}
   m_IsPrefabAsset: 0

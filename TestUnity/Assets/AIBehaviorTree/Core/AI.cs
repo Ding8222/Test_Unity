@@ -39,8 +39,9 @@ namespace AIBehaviorTree
         List<AINode> m_ListExecutingNodes = new List<AINode>();
         bool m_BlAiActive = false;
         void Start()
-        {   
-            
+        {
+            // Ä¬ÈÏÆô¶¯AI
+            StartAi();
         }
 
         public object UserData { get; set; }
