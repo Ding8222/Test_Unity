@@ -4,7 +4,7 @@ using System.Threading;
 using System.Net.Sockets;
 using System.Collections.Generic;
 using Sproto;
-using ClientSproto;
+using ClientSprotoType;
 using UnityEngine;
 
 public delegate void SocketConnected();

@@ -50,7 +50,7 @@ set (THIRDPART_SRC ${THIRDPART_SRC} ${LUACLIB_SRC})
 
 if (USING_LUAJIT)
 	
-    if (APPLE AND NOT IOS)
+    if (APPLE AND NOT IOS AND NOT ANDROID)
 	    include_directories(
 		  ${CMAKE_SOURCE_DIR}
 		  lua-5.1.5/src
@@ -158,7 +158,7 @@ if (APPLE)
            ${XLUA_CORE}
            ${THIRDPART_SRC}
         )
-		set_xcode_property (xlua IPHONEOS_DEPLOYMENT_TARGET "7.0")
+		set_xcode_property (xlua IPHONEOS_DEPLOYMENT_TARGET "7.0" "all")
     else ()
         set(CMAKE_OSX_ARCHITECTURES "$(ARCHS_STANDARD_64_BIT)")
         add_library(xlua MODULE
@@ -172,6 +172,14 @@ if (APPLE)
         #set_target_properties ( xlua PROPERTIES FRAMEWORK TRUE )
         #set_target_properties ( xlua PROPERTIES MACOSX_RPATH TRUE )
     endif ()
+elseif ("${CMAKE_SYSTEM_NAME}" STREQUAL "Switch")
+    add_library(xlua STATIC
+        ${LUA_CORE}
+        ${LUA_LIB}
+        ${XLUA_CORE}
+        ${THIRDPART_SRC}
+    )
+    target_compile_options(xlua PRIVATE -m64 -mcpu=cortex-a57+fp+simd+crypto+crc -fno-common -fno-short-enums -ffunction-sections -fdata-sections -fPIC -fms-extensions)
 else ( )
     add_library(xlua SHARED
         ${LUA_CORE}

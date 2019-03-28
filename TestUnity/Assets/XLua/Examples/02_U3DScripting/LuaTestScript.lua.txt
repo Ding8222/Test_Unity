@@ -23,6 +23,3 @@ function ondestroy()
     print("lua destroy")
 end
 
-function mytest(time)
-    print("time:"..time)
-end

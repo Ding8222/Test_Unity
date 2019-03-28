@@ -1,4 +1,4 @@
-using ClientSproto;
+using ClientSprotoType;
 using UnityEngine;
 using System.Text;
 using System.Security.Cryptography;
@@ -110,7 +110,7 @@ public class Login : MonoBehaviour {
         {
             PlayerInfo.Instance.Account = "ding";
             PlayerInfo.Instance.Password = "password";
-            PlayerInfo.Instance.Server = "sample";
+            PlayerInfo.Instance.Server = "game0";
         }
         NetCore.Connect(loginIP, loginPort, LoginConnected);
     }
@@ -156,13 +156,15 @@ public class Login : MonoBehaviour {
         {
             challenge.response rsp = _ as challenge.response;
             Debug.Log(rsp.result);
-            byte[] etoken = desencode(PlayerInfo.Instance.Secret, Encoding.UTF8.GetBytes(EncodeToken()));
+            string temp = EncodeToken();
+            byte[] etoken = desencode(PlayerInfo.Instance.Secret, Encoding.UTF8.GetBytes(temp));
             Auth(etoken);
         });
     }
 
     void Auth(byte[] etokens)
     {
+        Debug.Log(etokens.ToString());
         // 账号密码服务器验证
         auth.request req = new auth.request();
         req.etokens = Convert.ToBase64String(etokens);
@@ -179,6 +181,8 @@ public class Login : MonoBehaviour {
             int code = Convert.ToInt32(rsp.result.Substring(0, 3));
             if (code == 200)
             {
+                gameIP = rsp.gateip;
+                gamePort = (int)rsp.gateport;
                 // 验证成功时连接至gameserver
                 Debug.Log("登陆服务器认证成功!");
                 PlayerInfo.Instance.Subid = Utilities.UnBase64String(rsp.result.Substring(4));
@@ -190,7 +194,6 @@ public class Login : MonoBehaviour {
 
     void GameConnect()
     {
-        gameIP = loginIP;
         NetCore.Connect(gameIP, gamePort, GameConnected);
     }
 

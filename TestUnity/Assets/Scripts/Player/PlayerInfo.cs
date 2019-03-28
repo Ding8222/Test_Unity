@@ -1,4 +1,4 @@
-using ClientSproto;
+using ClientSprotoType;
 using System;
 using System.Collections;
 using System.Collections.Generic;
