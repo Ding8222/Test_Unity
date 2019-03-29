@@ -10,7 +10,6 @@ public class CameraFollow : MonoBehaviour
     private void Awake()
     {
         offset = transform.position - player.position;
-        Application.targetFrameRate = 1;
     }
 
     void FixedUpdate()
